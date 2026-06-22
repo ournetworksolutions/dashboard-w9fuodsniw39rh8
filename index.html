@@ -206,7 +206,7 @@
         }
         
         let usePub = false;
-        const serverGroups = [{"id": "github", "api_base": "", "domain_names": ["github.io"], "color": "#ffaa00", "mode": "static"}, {"id": "main", "api_base": "http://10.10.10.10:8081", "domain_names": ["10.10.10.10", "homer.dashboard.vlan10", "homer.vlan10"], "color": "#00ff99", "mode": "backend"}, {"id": "gia", "api_base": "http://10.10.10.20:8081", "domain_names": ["10.10.10.20", "192.168.1.10"], "color": "#00aaff", "mode": "backend"}];
+        const serverGroups = [{"id": "github", "api_base": "", "domain_names": ["github.io"], "color": "#ffaa00", "mode": "static"}, {"id": "main", "api_base": "http://10.10.10.10:8081/key_for_authentication", "domain_names": "homer.dashboard.vlan10", "color": "#00ff99", "mode": "backend"}, {"id": "gia", "api_base": "http://192.168.1.10:8081/key_for_authentication", "domain_names": "homer.dashboard.vlan20", "color": "#00aaff", "mode": "backend"}];
         let currentTabId = null; let activeUid = null;
         const sheet = document.getElementById('action-sheet-container'); const overlay = document.getElementById('menu-overlay');
         let isVisible = true;
