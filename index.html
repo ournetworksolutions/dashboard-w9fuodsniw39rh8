@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)http://homer.dashboard.vlan10/ -->
+<html lang="en" style="background-color: #0f1117;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Homer</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <meta name="theme-color" content="#0f1117">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+
+        <meta name="apple-mobile-web-app-title" content="Homer">
+
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+        <style>
+
+            body {background:#0f1117;color:#fff;font-family:sans-serif;padding:20px;margin:0;padding-bottom:120px;}
+
+            .top-bar {display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+
+            h1 {margin:0;font-size:24px;}
+
+            .cert-btn { background: #1c1f26; color: #8e95a0; font-weight: bold; border: 1px solid #2b2f36; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 13px; }
+
+            .cert-btn:hover { background: #2b2f36; color: #fff; border-color: #00ff99; }
+
+            .switch-container {display:flex;align-items:center;gap:10px;cursor:pointer;height:32px;}
+
+            .switch {width:50px;height:26px;background:#2b2f36;border-radius:20px;position:relative;}
+
+            .switch.active {background:#00ff99;box-shadow:0 0 10px #00ff99;}
+
+            .slider {width:22px;height:22px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:.2s;}
+
+            .switch.active .slider {transform:translateX(24px);}
+
+            .tab-container { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #2b2f36; padding-bottom: 15px; overflow-x: auto; }
+
+            .tab-container::-webkit-scrollbar { display: none; }
+
+            .tab-btn { background: #1c1f26; color: #8e95a0; border: 2px solid transparent; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s; white-space: nowrap; }
+
+            .tab-btn:hover { background: #2b2f36; color: #fff; }
+
+            .tab-btn.active { color: #fff; border-color: var(--theme-color); background: #111a22; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+
+            .server-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+            .server-reboot-btn { background: #ff4444; color: #fff; box-shadow: 0 0 12px rgba(255, 68, 68, 0.4); border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 13px; }
+
+            .server-reboot-btn:active { transform: scale(0.95); }
+
+            .grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;}
+
+            .card-link {text-decoration:none;color:inherit;display:block;-webkit-touch-callout:none;user-select:none;}
+
+            .card {background:#1c1f26;padding:20px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:.2s;height:100%;box-sizing:border-box;position:relative;}
+
+            .card:hover {border-color: var(--theme-color);} 
+
+            .card.active {border-color: var(--theme-color); background:#111a22; box-shadow:0 0 15px var(--theme-color);}
+
+            .kebab-menu {position:absolute;top:10px;right:10px;font-size:24px;line-height:16px;color:#8e95a0;cursor:pointer;padding:8px;border-radius:6px;transition:.2s;z-index:10;}
+
+            .kebab-menu:hover {color:#fff;background:rgba(255,255,255,0.1);}
+
+            .section-title {margin-top:20px;font-size:18px;color:#eaeaea;border-bottom:1px solid #2b2f36;padding-bottom:10px;}
+
+            .disk-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;margin-top:15px;}
+
+            .disk-card {background:#1c1f26;padding:15px;border-radius:8px;border:1px solid #2b2f36;}
+
+            .disk-header {display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px;}
+
+            .progress-bar-bg {background:#0f1117;border-radius:4px;height:8px;width:100%;overflow:hidden;}
+
+            .progress-bar-fill {background:#00ff99;height:100%;transition:width 0.5s ease;}
+
+            .progress-bar-fill.warning {background:#ffaa00;} .progress-bar-fill.danger {background:#ff4444;}
+
+            #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); z-index: 9998; opacity: 0; visibility: hidden; transition: opacity 0.3s ease; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+
+            #menu-overlay.active { opacity: 1; visibility: visible; }
+
+            #action-sheet-container { position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 95%; max-width: 400px; z-index: 9999; transition: bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; gap: 8px; padding-bottom: max(15px, env(safe-area-inset-bottom)); }
+
+            #action-sheet-container.active { bottom: 0; }
+
+            .action-group { background: rgba(35, 38, 45, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+
+            .action-group .menu-title { text-align: center; padding: 14px; font-size: 13px; color: #8e95a0; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+            .action-group button { width: 100%; background: transparent; color: #fff; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 18px 20px; text-align: center; font-size: 18px; cursor: pointer; transition: background 0.2s; margin: 0; }
+
+            .action-group button:last-child { border-bottom: none; }
+
+            .action-group button:active { background: rgba(255,255,255,0.15); }
+
+            .cancel-group button { font-weight: 600; color: #ff4444; }
+
+            .sysinfo-bar {position:fixed;bottom:0;left:0;width:100%;background:rgba(28, 31, 38, 0.95);backdrop-filter:blur(5px);border-top:1px solid #2b2f36;z-index:1000;overflow-x:auto;-webkit-overflow-scrolling:touch;display:flex;justify-content:center;}
+
+            .sysinfo-bar::-webkit-scrollbar {display:none;}
+
+            .sysinfo-inner {display:flex;justify-content:space-evenly;align-items:center;width:100%;max-width:1200px;min-width:650px;padding:12px 15px;box-sizing:border-box;}
+
+            .sysinfo-item { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+
+            .sysinfo-label { color: #6c757d; font-size: 10px; text-transform: uppercase; margin-bottom: 4px; }
+
+            .sysinfo-value { color: #00ff99; font-weight: bold; font-size: 15px; font-family: monospace; }
+
+            .horizontal-divider {border:none;border-bottom:1px solid #2b2f36;margin:40px 0;}
+
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+            .tab-pane { animation: fadeIn 0.3s ease; }
+
+            #gateway-modal-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); background: rgba(35, 38, 45, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid #2b2f36; border-radius: 14px; padding: 20px; width: 90%; max-width: 400px; z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+            #gateway-modal-container.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+
+            .gateway-title { text-align: center; color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+
+            .gateway-btn { background: #1c1f26; color: #00ff99; border: 1px solid #2b2f36; padding: 12px 15px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 15px; transition: 0.2s; display: flex; flex-direction: column; text-decoration: none; }
+
+            .gateway-btn:hover { background: #2b2f36; border-color: #00ff99; }
+
+            .gateway-btn-title { font-weight: bold; color: #fff; margin-bottom: 4px; }
+
+            .gateway-btn-url { font-size: 12px; color: #8e95a0; word-break: break-all; }
+
+            .gateway-cancel { background: transparent; color: #ff4444; border: none; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; margin-top: 5px; border-radius: 8px; }
+
+            .gateway-cancel:hover { background: rgba(255, 68, 68, 0.1); }
+
+        </style></head><body>
+
+            <div class="top-bar">
+
+                <h1>Our Network Solutions Gateway</h1>
+
+                <div style="display: flex; align-items: center; gap: 15px;">
+
+                    <button class="cert-btn" title="Download CA Certificate" onclick="downloadCert()">CA</button>
+
+                    <div class="switch-container" onclick="togMode()">
+
+                        <span id="mode-label">DNS</span>
+
+                        <div class="switch " id="mode-switch"><div class="slider"></div></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="tab-container"><button class="tab-btn active" id="tab-btn-github" style="--theme-color: #ffaa00;" onclick="openTab(&#39;github&#39;)">GitHub Node</button><button class="tab-btn" id="tab-btn-main" style="--theme-color: #00ff99;" onclick="openTab(&#39;main&#39;)">BigBox Node</button><button class="tab-btn" id="tab-btn-gia" style="--theme-color: #00aaff;" onclick="openTab(&#39;gia&#39;)">Giatrakos Node</button></div>
+
+            <div id="pane-github" class="tab-pane" style="display: block;"><div class="server-header"><h1 class="section-title" style="margin-top:0; border:none;">Static Cloud Backup Services</h1></div><div class="grid"><a href="http://homer.dashboard.vlan10/#" target="_blank" rel="noopener noreferrer" class="card-link" data-local="#" data-public="#" data-uid="svc_0" data-name="Cloud Gateway" onclick="event.preventDefault(); openGatewayModal(&#39;Cloud Gateway&#39;);"><div class="card" id="card-svc_0" style="--theme-color: #ffaa00;"><h2>Cloud Gateway</h2><p id="status-svc_0" style="font-weight: bold; color: rgb(0, 255, 153);">Always Online</p></div></a><a href="http://homer.dashboard.vlan10/#" target="_blank" rel="noopener noreferrer" class="card-link" data-local="#" data-public="#" data-uid="svc_1" data-name="Jellyfin Gateway" onclick="event.preventDefault(); openGatewayModal(&#39;Jellyfin Gateway&#39;);"><div class="card" id="card-svc_1" style="--theme-color: #ffaa00;"><h2>Jellyfin Gateway</h2><p id="status-svc_1" style="font-weight: bold; color: rgb(0, 255, 153);">Always Online</p></div></a><a href="http://homer.dashboard.vlan10/#" target="_blank" rel="noopener noreferrer" class="card-link" data-local="#" data-public="#" data-uid="svc_2" data-name="Navidrome Gateway" onclick="event.preventDefault(); openGatewayModal(&#39;Navidrome Gateway&#39;);"><div class="card" id="card-svc_2" style="--theme-color: #ffaa00;"><h2>Navidrome Gateway</h2><p id="status-svc_2" style="font-weight: bold; color: rgb(0, 255, 153);">Always Online</p></div></a></div><hr class="horizontal-divider" style="margin-top:0; border:none;"><h1 class="section-title" style="margin-top:0;">Storage</h1><div class="disk-grid" id="disks-github"><span style="color:#6c757d;font-size:14px;">Storage not available on GitHub backup.</span></div></div><div id="pane-main" class="tab-pane" style="display: none;"><div class="server-header"><h1 class="section-title" style="margin-top:0; border:none;">Services</h1><button class="server-reboot-btn" onclick="reqServerReboot(&#39;main&#39;, &#39;BigBox Node&#39;)">Reboot Server</button></div><div class="grid"><a href="https://router.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://router.homer.vlan10" data-public="http://10.10.10.1" data-uid="svc_3" data-name="Router Gateway" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_3" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_3&#39;);">⋮</div><h2>Router Gateway</h2><p id="status-svc_3" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">Always Online</span></p></div></a><a href="https://switch.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://switch.homer.vlan10" data-public="http://10.10.10.11" data-uid="svc_4" data-name="MikroTik Switch" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_4" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_4&#39;);">⋮</div><h2>MikroTik Switch</h2><p id="status-svc_4" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">Always Online</span></p></div></a><a href="https://switchext.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://switchext.homer.vlan10" data-public="http://10.10.10.12" data-uid="svc_5" data-name="MikroTik Switch Extender" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_5" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_5&#39;);">⋮</div><h2>MikroTik Switch Extender</h2><p id="status-svc_5" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">Always Online</span></p></div></a><a href="https://ap.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://ap.homer.vlan10" data-public="http://10.10.10.2" data-uid="svc_6" data-name="MikroTik Access Point" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_6" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_6&#39;);">⋮</div><h2>MikroTik Access Point</h2><p id="status-svc_6" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">Always Online</span></p></div></a><a href="https://login.tailscale.com/admin/machines" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://login.tailscale.com/admin/machines" data-public="https://login.tailscale.com/admin/machines" data-uid="svc_7" data-name="TailScale VPN" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_7" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_7&#39;);">⋮</div><h2>TailScale VPN</h2><p id="status-svc_7" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">Always Online</span></p></div></a><a href="https://www.idrive.com/idrive/home" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://www.idrive.com/idrive/home" data-public="https://www.idrive.com/idrive/home" data-uid="svc_8" data-name="IDrive Backup" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_8" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_8&#39;);">⋮</div><h2>IDrive Backup</h2><p id="status-svc_8" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">Always Online</span></p></div></a><a href="http://maintenance.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="http://maintenance.homer.vlan10" data-public="http://10.10.10.10:8384" data-uid="svc_9" data-name="Maintenance" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_9" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_9&#39;);">⋮</div><h2>Maintenance</h2><p id="status-svc_9" style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a><a href="https://pihole.homer.vlan10/admin" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://pihole.homer.vlan10/admin" data-public="http://10.10.10.10:8485/admin" data-uid="svc_10" data-name="Pi-hole DNS" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_10" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_10&#39;);">⋮</div><h2>Pi-hole DNS</h2><p id="status-svc_10" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">43.9% blocked</span></p></div></a><a href="https://nginx.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://nginx.homer.vlan10" data-public="http://10.10.10.10:81" data-uid="svc_11" data-name="Nginx Proxy" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_11" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_11&#39;);">⋮</div><h2>Nginx Proxy</h2><p id="status-svc_11" style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a><a href="http://homer.dashboard.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="" data-public="http://10.10.10.10:8182" data-uid="svc_12" data-name="Cloud Gateway" onclick="event.preventDefault(); openGatewayModal(&#39;Cloud Gateway&#39;);"><div class="card" id="card-svc_12" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_12&#39;);">⋮</div><h2>Cloud Gateway</h2><p id="status-svc_12" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">Always Online</span></p></div></a><a href="http://homer.dashboard.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="" data-public="http://10.10.10.10:8080" data-uid="svc_13" data-name="Jellyfin Gateway" onclick="event.preventDefault(); openGatewayModal(&#39;Jellyfin Gateway&#39;);"><div class="card" id="card-svc_13" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_13&#39;);">⋮</div><h2>Jellyfin Gateway</h2><p id="status-svc_13" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">Always Online</span></p></div></a><a href="http://homer.dashboard.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="" data-public="http://10.10.10.10:8181" data-uid="svc_14" data-name="Navidrome Gateway" onclick="event.preventDefault(); openGatewayModal(&#39;Navidrome Gateway&#39;);"><div class="card" id="card-svc_14" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_14&#39;);">⋮</div><h2>Navidrome Gateway</h2><p id="status-svc_14" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">Always Online</span></p></div></a><a href="https://seerr.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://seerr.homer.vlan10" data-public="http://10.10.10.10:5055" data-uid="svc_15" data-name="Seerr" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_15" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_15&#39;);">⋮</div><h2>Seerr</h2><p id="status-svc_15" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">69 total requests</span></p></div></a><a href="https://prowlarr.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://prowlarr.homer.vlan10" data-public="http://10.10.10.10:9696" data-uid="svc_16" data-name="Prowlarr" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_16" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_16&#39;);">⋮</div><h2>Prowlarr</h2><p id="status-svc_16" style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a><a href="https://radarr.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://radarr.homer.vlan10" data-public="http://10.10.10.10:7878" data-uid="svc_17" data-name="Radarr" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_17" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_17&#39;);">⋮</div><h2>Radarr</h2><p id="status-svc_17" style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a><a href="https://sonarr.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://sonarr.homer.vlan10" data-public="http://10.10.10.10:8989" data-uid="svc_18" data-name="Sonarr" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_18" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_18&#39;);">⋮</div><h2>Sonarr</h2><p id="status-svc_18" style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a><a href="https://navidrome.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://navidrome.homer.vlan10" data-public="http://10.10.10.10:4533" data-uid="svc_19" data-name="Navidrome" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_19" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_19&#39;);">⋮</div><h2>Navidrome</h2><p id="status-svc_19" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">0 listening</span></p></div></a><a href="http://musicgrabber.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="http://musicgrabber.homer.vlan10" data-public="http://10.10.10.10:8586" data-uid="svc_20" data-name="Music Grabber" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_20" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_20&#39;);">⋮</div><h2>Music Grabber</h2><p id="status-svc_20" style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a><a href="https://vuetorrent.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://vuetorrent.homer.vlan10" data-public="http://10.10.10.10:8283" data-uid="svc_21" data-name="VueTorrent" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_21" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_21&#39;);">⋮</div><h2>VueTorrent</h2><p id="status-svc_21" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">0 torrents</span></p></div></a><a href="https://vaultwarden.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://vaultwarden.homer.vlan10" data-public="https://10.10.10.10:8687" data-uid="svc_22" data-name="Vaultwarden" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_22" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_22&#39;);">⋮</div><h2>Vaultwarden</h2><p id="status-svc_22" style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a><a href="https://searxng.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://searxng.homer.vlan10" data-public="http://10.10.10.10:8788" data-uid="svc_23" data-name="SearXNG" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_23" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_23&#39;);">⋮</div><h2>SearXNG</h2><p id="status-svc_23" style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a><a href="https://portainer.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://portainer.homer.vlan10" data-public="https://10.10.10.10:9443" data-uid="svc_24" data-name="Portainer" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_24" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_24&#39;);">⋮</div><h2>Portainer</h2><p id="status-svc_24" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">21 running</span></p></div></a><a href="http://speedtest.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="http://speedtest.homer.vlan10" data-public="http://10.10.10.10:8765" data-uid="svc_25" data-name="Speedtest" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_25" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_25&#39;);">⋮</div><h2>Speedtest</h2><p id="status-svc_25" style="font-weight: bold; color: rgb(0, 255, 153);">Online<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">25 ms &nbsp; ↓ 25 Mbps &nbsp; ↑ 25 Mbps</span></p></div></a><a href="https://omnitools.homer.vlan10/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://omnitools.homer.vlan10" data-public="http://10.10.10.10:9697" data-uid="svc_26" data-name="OmniTools" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_26" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_26&#39;);">⋮</div><h2>OmniTools</h2><p id="status-svc_26" style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a><a href="http://ngrok.homer.vlan10/status" target="_blank" rel="noopener noreferrer" class="card-link" data-local="http://ngrok.homer.vlan10/status" data-public="http://10.10.10.10:4040/status" data-uid="svc_27" data-name="ngrok tunnel" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_27" style="--theme-color: #00ff99;"><div class="kebab-menu" onclick="event.preventDefault(); event.stopPropagation(); showMenu(&#39;svc_27&#39;);">⋮</div><h2>ngrok tunnel</h2><p id="status-svc_27" style="font-weight: bold; color: rgb(255, 68, 68);">Offline</p></div></a></div><hr class="horizontal-divider" style="margin-top:0; border:none;"><h1 class="section-title" style="margin-top:0;">Storage</h1><div class="disk-grid" id="disks-main"><div class="disk-card"><div class="disk-header"><span style="font-weight:bold;color:#fff;">home</span><span style="color:#8e95a0;">82G / 466G (18%)</span></div><div class="progress-bar-bg"><div class="progress-bar-fill " style="width:18%"></div></div></div></div></div><div id="pane-gia" class="tab-pane" style="display: none;"><div class="server-header"><h1 class="section-title" style="margin-top:0; border:none;">Services</h1><button class="server-reboot-btn" onclick="reqServerReboot(&#39;gia&#39;, &#39;Giatrakos Node&#39;)">Reboot Server</button></div><div class="grid"><a href="https://router.homer.vlan20/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://router.homer.vlan20" data-public="http://192.168.1.254" data-uid="svc_28" data-name="Router Gateway" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_28" style="--theme-color: #00aaff;"><h2>Router Gateway</h2><p id="status-svc_28" style="font-weight:bold;">Checking...</p></div></a><a href="https://meshcentral.homer.vlan20/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://meshcentral.homer.vlan20" data-public="https://192.168.1.10" data-uid="svc_29" data-name="MeshCentral" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_29" style="--theme-color: #00aaff;"><h2>MeshCentral</h2><p id="status-svc_29" style="font-weight:bold;">Checking...</p></div></a><a href="https://vuetorrent.homer.vlan20/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://vuetorrent.homer.vlan20" data-public="http://192.168.1.10:8283" data-uid="svc_30" data-name="VueTorrent" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_30" style="--theme-color: #00aaff;"><h2>VueTorrent</h2><p id="status-svc_30" style="font-weight:bold;">Checking...</p></div></a><a href="https://jellyfin.homer.vlan20/" target="_blank" rel="noopener noreferrer" class="card-link" data-local="https://jellyfin.homer.vlan20" data-public="http://192.168.1.10:8096" data-uid="svc_31" data-name="Jellyfin" onclick="selCard(this.querySelector(&#39;.card&#39;))"><div class="card" id="card-svc_31" style="--theme-color: #00aaff;"><h2>Jellyfin</h2><p id="status-svc_31" style="font-weight:bold;">Checking...</p></div></a></div><hr class="horizontal-divider" style="margin-top:0; border:none;"><h1 class="section-title" style="margin-top:0;">Storage</h1><div class="disk-grid" id="disks-gia"><span style="color:#6c757d;font-size:14px;">No drives found.</span></div></div>
+
+            <div class="sysinfo-bar">
+
+                <div class="sysinfo-inner">
+
+                    <div class="sysinfo-item"><span class="sysinfo-label">Uptime</span><span class="sysinfo-value" id="sys-uptime">N/A</span></div>
+
+                    <div class="sysinfo-item"><span class="sysinfo-label">DL Speed</span><span class="sysinfo-value" id="sys-net-down">N/A</span></div>
+
+                    <div class="sysinfo-item"><span class="sysinfo-label">UL Speed</span><span class="sysinfo-value" id="sys-net-up">N/A</span></div>
+
+                    <div class="sysinfo-item"><span class="sysinfo-label">CPU Use</span><span class="sysinfo-value" id="sys-cpu-use">N/A</span></div>
+
+                    <div class="sysinfo-item"><span class="sysinfo-label">RAM Use</span><span class="sysinfo-value" id="sys-ram-use">N/A</span></div>
+
+                    <div class="sysinfo-item"><span class="sysinfo-label">CPU Temp</span><span class="sysinfo-value" id="sys-cpu-temp">N/A</span></div>
+
+                </div>
+
+            </div>
+
+            <div id="menu-overlay" onclick="closeMenu(); closeGatewayModal();"></div>
+
+            <div id="action-sheet-container">
+
+                <div class="action-group">
+
+                    <div class="menu-title">Service Actions</div>
+
+                    <button onclick="sendAct(&#39;start&#39;)">Start</button>
+
+                    <button onclick="sendAct(&#39;stop&#39;)">Stop</button>
+
+                    <button onclick="sendAct(&#39;restart&#39;)">Restart</button>
+
+                </div>
+
+                <div class="action-group cancel-group"><button onclick="closeMenu()">Cancel</button></div>
+
+            </div>
+
+            <div id="gateway-modal-container">
+
+                <div class="gateway-title" id="gateway-modal-title">Select Link</div>
+
+                <div id="gateway-modal-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+
+                <button class="gateway-cancel" onclick="closeGatewayModal()">Cancel</button>
+
+            </div>
+
+            
+
+            <script>
+
+                const gatewayData = {"Cloud Gateway": [{"title": "Cloud for Users", "url": "http://cloud.media.vlan10"}, {"title": "Backup for Administrators", "url": "https://cloud.homer.vlan10"}], "Jellyfin Gateway": [{"title": "Jellyfin for Users", "url": "http://jellyfin.media.vlan10"}, {"title": "Backup for Administrators", "url": "https://ournetworksolutions.github.io/media-gateway-81nsuq8hd/"}], "Navidrome Gateway": [{"title": "Navidrome for Users", "url": "http://navidrome.media.vlan10"}, {"title": "Backup for Administrators", "url": "https://ournetworksolutions.github.io/music-gateway-ioe3890ww/"}]};
+
+                function openGatewayModal(serviceName) {
+
+                    const data = gatewayData[serviceName];
+
+                    if (!data) return;
+
+                    document.getElementById('gateway-modal-title').innerText = serviceName;
+
+                    const list = document.getElementById('gateway-modal-list'); list.innerHTML = "";
+
+                    data.forEach(item => {
+
+                        let a = document.createElement('a'); a.className = "gateway-btn"; a.href = item.url; a.target = "_blank";
+
+                        a.innerHTML = `<span class="gateway-btn-title">${item.title}</span><span class="gateway-btn-url">${item.url}</span>`;
+
+                        a.onclick = function() { closeGatewayModal(); }; list.appendChild(a);
+
+                    });
+
+                    document.getElementById('menu-overlay').classList.add('active');
+
+                    document.getElementById('gateway-modal-container').classList.add('active');
+
+                }
+
+                function closeGatewayModal() {
+
+                    let modal = document.getElementById('gateway-modal-container'); if (modal) modal.classList.remove('active');
+
+                    if (!document.getElementById('action-sheet-container').classList.contains('active')) document.getElementById('menu-overlay').classList.remove('active');
+
+                }
+
+                
+
+                let usePub = false;
+
+                const serverGroups = [{"id": "github", "api_base": "", "domain_names": ["github.io"], "color": "#ffaa00", "mode": "static"}, {"id": "main", "api_base": "http://10.10.10.10:8081", "domain_names": ["10.10.10.10", "homer.dashboard.vlan10", "homer.vlan10"], "color": "#00ff99", "mode": "backend"}, {"id": "gia", "api_base": "http://10.10.10.20:8081", "domain_names": ["10.10.10.20", "192.168.1.10"], "color": "#00aaff", "mode": "backend"}];
+
+                let currentTabId = null; let activeUid = null;
+
+                const sheet = document.getElementById('action-sheet-container'); const overlay = document.getElementById('menu-overlay');
+
+                let isVisible = true;
+
+                
+
+                document.addEventListener("visibilitychange", () => {
+
+                    isVisible = document.visibilityState === "visible";
+
+                    if (isVisible && currentTabId) { updStat(); updSys(); updDisk(); }
+
+                });
+
+                
+
+                // --- THE SMART PROXY & FETCH ENGINE ---
+
+                async function fetchNodeData(node, path) {
+
+                    if (!node || node.mode === 'static') return null;
+
+                    let host = window.location.hostname;
+
+                    // If we are currently ON this node's domain (or localhost), use relative path (Fastest, avoids proxy)
+
+                    if (node.domain_names.includes(host) || host === 'localhost' || host === '127.0.0.1') return await fetch(path);
+
+                    
+
+                    // Try direct Cross-Origin fetch first (Works great on LAN)
+
+                    try {
+
+                        let controller = new AbortController(); let timeoutId = setTimeout(() => controller.abort(), 3000);
+
+                        let r = await fetch(node.api_base + path, { signal: controller.signal });
+
+                        clearTimeout(timeoutId);
+
+                        if (r.ok) return r;
+
+                    } catch (e) { console.log("Direct fetch blocked (likely Mixed Content). Engaging Proxy fallback."); }
+
+                    
+
+                    // SMART FALLBACK: Proxy the request through the server we are currently viewing
+
+                    return await fetch('/api/proxy?url=' + encodeURIComponent(node.api_base + path));
+
+                }
+
+
+
+                function initTabs() {
+
+                    let host = window.location.hostname;
+
+                    let matched = serverGroups.find(g => g.domain_names && g.domain_names.includes(host));
+
+                    if (!matched && (host === 'localhost' || host === '127.0.0.1')) matched = serverGroups.find(g => g.id === 'main');
+
+                    let startId = matched ? matched.id : serverGroups[0].id;
+
+                    openTab(startId);
+
+                }
+
+                
+
+                function openTab(id) {
+
+                    document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+                    document.getElementById('pane-' + id).style.display = 'block';
+
+                    document.getElementById('tab-btn-' + id).classList.add('active');
+
+                    currentTabId = id;
+
+                    updSys(); updDisk(); updStat();
+
+                }
+
+                
+
+                function togMode() {
+
+                    usePub = !usePub; document.getElementById("mode-switch").classList.toggle("active");
+
+                    document.getElementById("mode-label").innerText = usePub ? "IP" : "DNS";
+
+                    document.querySelectorAll('.card-link').forEach(l => l.href = usePub ? l.getAttribute('data-public') : l.getAttribute('data-local'));
+
+                    updStat();
+
+                }
+
+                
+
+                function selCard(el) { document.querySelectorAll('.card').forEach(c => c.classList.remove('active')); if (el) el.classList.add('active'); }
+
+                function showMenu(uid) { activeUid = uid; overlay.classList.add('active'); sheet.classList.add('active'); }
+
+                function closeMenu() { overlay.classList.remove('active'); sheet.classList.remove('active'); }
+
+                
+
+                async function sendAct(act) {
+
+                    if (!activeUid) return;
+
+                    let safeUid = activeUid; closeMenu();
+
+                    try {
+
+                        let node = serverGroups.find(g => g.id === currentTabId);
+
+                        let linkEl = document.querySelector(`.card-link[data-uid="${safeUid}"]`);
+
+                        
+
+                        let r = await fetchNodeData(node, '/api/action');
+
+                        // For action we need to POST, so we handle it uniquely
+
+                        let targetUrl = node.domain_names.includes(window.location.hostname) ? '/api/action' : '/api/proxy?url=' + encodeURIComponent(node.api_base + '/api/action');
+
+                        let payload = JSON.stringify({ uid: safeUid, action: act });
+
+                        
+
+                        let req = await fetch(targetUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload });
+
+                        if (req.ok) { alert(act.toUpperCase() + " command sent!"); updStat(); } else alert('Failed.');
+
+                    } catch (e) { alert('Error communicating with backend.'); }
+
+                }
+
+                
+
+                async function reqServerReboot(id, name) {
+
+                    let node = serverGroups.find(g => g.id === id);
+
+                    let pw = prompt(`Enter password to reboot ${name}:`); if (!pw) return;
+
+                    try {
+
+                        let targetUrl = node.domain_names.includes(window.location.hostname) ? '/api/reboot' : '/api/proxy?url=' + encodeURIComponent(node.api_base + '/api/reboot');
+
+                        let r = await fetch(targetUrl, { method: 'POST', body: JSON.stringify({ password: pw }) }); 
+
+                        if(r.ok) alert(`${name} is Rebooting...`); else alert("Wrong password or request failed."); 
+
+                    } catch (e) { alert("Remote agent unreachable."); }
+
+                }
+
+                
+
+                async function updStat() {
+
+                    if (!isVisible || !currentTabId) return;
+
+                    let node = serverGroups.find(n => n.id === currentTabId);
+
+                    
+
+                    if (node && node.mode === 'static') {
+
+                        document.querySelectorAll(`#pane-${currentTabId} .card-link`).forEach(el => {
+
+                            let statEl = el.querySelector('p[id^="status-"]');
+
+                            if (statEl) { statEl.innerHTML = "Always Online"; statEl.style.color = "#00ff99"; }
+
+                        });
+
+                        return;
+
+                    }
+
+                    try {
+
+                        let res = await fetchNodeData(node, '/api/status?node=' + node.id);
+
+                        if (!res || !res.ok) throw new Error("Offline");
+
+                        let d = await res.json();
+
+                        for (let [uid, info] of Object.entries(d)) {
+
+                            let el = document.getElementById('status-' + uid);
+
+                            if (el) {
+
+                                let html = info.online ? "Online" : "Offline";
+
+                                if (info.extra) html += `<br><span style="font-size:13px;color:#8e95a0;font-weight:600;">${info.extra}</span>`;
+
+                                if (el.innerHTML !== html) el.innerHTML = html; 
+
+                                el.style.color = info.online ? "#00ff99" : "#ff4444";
+
+                            }
+
+                        }
+
+                    } catch (e) {
+
+                        document.querySelectorAll(`#pane-${currentTabId} [id^='status-']`).forEach(el => {
+
+                            el.innerHTML = "Offline (Node Dead)"; el.style.color = "#ff4444";
+
+                        });
+
+                    }
+
+                }
+
+                
+
+                async function updDisk() {
+
+                    if (!isVisible || !currentTabId) return; 
+
+                    let node = serverGroups.find(n => n.id === currentTabId);
+
+                    let c = document.getElementById('disks-' + currentTabId); if (!c) return;
+
+                    
+
+                    if (node && node.mode === 'static') {
+
+                        c.innerHTML = '<span style="color:#6c757d;font-size:14px;">Storage not available on GitHub backup.</span>'; return;
+
+                    }
+
+                    try {
+
+                        let res = await fetchNodeData(node, '/api/disks');
+
+                        if (!res || !res.ok) throw new Error("Storage Offline");
+
+                        let d = await res.json();
+
+                        if (!d.length) { c.innerHTML = '<span style="color:#6c757d;font-size:14px;">No drives found.</span>'; return; }
+
+                        let h = d.map(x => `<div class="disk-card"><div class="disk-header"><span style="font-weight:bold;color:#fff;">${x.mount}</span><span style="color:#8e95a0;">${x.used} / ${x.size} (${x.percent}%)</span></div><div class="progress-bar-bg"><div class="progress-bar-fill ${x.percent>90?'danger':x.percent>75?'warning':''}" style="width:${x.percent}%"></div></div></div>`).join('');
+
+                        if (c.innerHTML !== h) c.innerHTML = h;
+
+                    } catch (e) { c.innerHTML = '<span style="color:#ff4444;">Storage monitoring unreachable.</span>'; }
+
+                }
+
+                
+
+                async function updSys() {
+
+                    if (!isVisible || !currentTabId) return; 
+
+                    let node = serverGroups.find(n => n.id === currentTabId);
+
+                    const map = { 'uptime': 'sys-uptime', 'net_down': 'sys-net-down', 'net_up': 'sys-net-up', 'cpu_usage': 'sys-cpu-use', 'ram_usage': 'sys-ram-use', 'temp_cpu': 'sys-cpu-temp' };
+
+                    
+
+                    if (node && node.mode === 'static') { for (let k in map) document.getElementById(map[k]).innerText = 'N/A'; return; }
+
+                    
+
+                    try {
+
+                        let res = await fetchNodeData(node, '/api/sysinfo');
+
+                        if (!res || !res.ok) throw new Error("Offline");
+
+                        let d = await res.json();
+
+                        for (let key in map) {
+
+                            let el = document.getElementById(map[key]);
+
+                            if (el && d[key] !== undefined && el.innerText !== d[key]) el.innerText = d[key];
+
+                        }
+
+                    } catch (e) {
+
+                        for (let key in map) { let el = document.getElementById(map[key]); if (el) el.innerText = 'N/A'; }
+
+                    }
+
+                }
+
+                
+
+                setTimeout(() => { 
+
+                    initTabs();
+
+                    setInterval(updStat, 5000); 
+
+                    setInterval(updSys, 3000); 
+
+                    setInterval(updDisk, 60000); 
+
+                }, 100);
+
+            </script>
+
+        </body></html>
