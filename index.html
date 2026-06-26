@@ -86,6 +86,9 @@
             <a href="#" target="_blank" rel="noopener noreferrer" class="card-link" onclick="event.preventDefault(); openGatewayModal('Cloud Gateway');"><div class="card" style="--theme-color: #00ff99;"><h2>Cloud Gateway</h2><p style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="card-link" onclick="event.preventDefault(); openGatewayModal('Jellyfin Gateway');"><div class="card" style="--theme-color: #00ff99;"><h2>Jellyfin Gateway</h2><p style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="card-link" onclick="event.preventDefault(); openGatewayModal('Navidrome Gateway');"><div class="card" style="--theme-color: #00ff99;"><h2>Navidrome Gateway</h2><p style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="card-link" onclick="event.preventDefault(); openGatewayModal('TailScale Admin Panel');"><div class="card" style="--theme-color: #00ff99;"><h2>TailScale Admin Panel</h2><p style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="card-link" onclick="event.preventDefault(); openGatewayModal('IDrive Backup');"><div class="card" style="--theme-color: #00ff99;"><h2>IDrive Backup</h2><p style="font-weight: bold; color: rgb(0, 255, 153);">Online</p></div></a>
+
         </div>
         <hr class="horizontal-divider" style="margin-top:0; border:none;">
         <h1 class="section-title" style="margin-top:0;">Copyrights</h1>
@@ -115,7 +118,9 @@
         const gatewayData = {
             "Cloud Gateway": [{"title": "Cloud for Users", "url": "http://cloud.media.vlan10"}, {"title": "Backup for Administrators", "url": "https://cloud.homer.vlan10"}], 
             "Jellyfin Gateway": [{"title": "Jellyfin for Users", "url": "http://jellyfin.media.vlan10"}, {"title": "Backup for Administrators", "url": "https://ournetworksolutions.github.io/media-gateway-81nsuq8hd/"}], 
-            "Navidrome Gateway": [{"title": "Navidrome for Users", "url": "http://navidrome.media.vlan10"}, {"title": "Backup for Administrators", "url": "https://ournetworksolutions.github.io/music-gateway-ioe3890ww/"}]
+            "Navidrome Gateway": [{"title": "Navidrome for Users", "url": "http://navidrome.media.vlan10"}, {"title": "Backup for Administrators", "url": "https://ournetworksolutions.github.io/music-gateway-ioe3890ww/"}],
+            "TailScale Admin Panel": [{"title": "TailScale Admin Panel", "url": "https://login.tailscale.com/admin/machines"}],
+            "IDrive Backup": [{"title": "IDrive Backup", "url": "https://www.idrive.com/idrive/home"}]
         };
         
         let useIp = false; // Tracks if the switch is in IP mode
